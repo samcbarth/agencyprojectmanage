@@ -100,8 +100,8 @@ alter table public.kanban_items add column if not exists command_log jsonb defau
 alter table public.kanban_items add column if not exists due_date date;
 alter table public.kanban_items add column if not exists sort_order numeric;
 */
-const BUILD_VERSION='0.00002';
-const VERSION_HISTORY=['0.00002 — Added dynamic agent boxes, structured prompts, and visible version history','0.00001 — Added timestamp version display'];
+const BUILD_VERSION='0.00003';
+const VERSION_HISTORY=['0.00003 — Made mobile lanes full-screen swipe panels','0.00002 — Added dynamic agent boxes, structured prompts, and visible version history','0.00001 — Added timestamp version display'];
 const SUPABASE_URL='https://yavxkarxbdkdqmnqqmrg.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdnhrYXJ4YmRrZHFtbnFxbXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MDUxMTksImV4cCI6MjA5MjM4MTExOX0.nMSVm5ddGaMIGQ8OfOeE-oy1RBaFO0FGxhNssgCaiVk';
 const hasBackend=!SUPABASE_URL.includes('PASTE_')&&!SUPABASE_ANON_KEY.includes('PASTE_');
