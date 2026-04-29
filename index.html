@@ -13,7 +13,7 @@
 </head>
 <body>
 <div class="app" id="app">
-<header class="header"><div><h1>Agency Project Manager <span id="version" style="font-size:12px;color:var(--muted);"></span></h1><div class="sub">Structured agent work packets for Claude skills, project shepherding, learning loops, and delivery.</div><div class="agent-bar" id="agentBar"></div><div class="tabs"><button class="tab active" onclick="switchView('kanban')">Kanban</button><button class="tab" onclick="switchView('table')">Main Table</button></div></div></header>
+<header class="header"><div><h1>Agency Project Manager <span id="version" style="font-size:12px;color:var(--muted);"></span></h1><div class="sub">Structured agent work packets for Claude skills, project shepherding, learning loops, and delivery.</div><div id="versionHistory" class="sub"></div><div class="agent-bar" id="agentBar"></div><div class="tabs"><button class="tab active" onclick="switchView('kanban')">Kanban</button><button class="tab" onclick="switchView('table')">Main Table</button></div></div></header>
 <div class="toolbar"><button class="new-btn" onclick="openModal()">New</button><input id="search" placeholder="Search" oninput="render()" /><select id="ownerFilter" onchange="render()"><option value="">All owners</option></select><button onclick="toggleFocus()">Focus Mode</button><button onclick="loadItems()">Refresh</button><span class="mobile-hint">Swipe lanes →</span><span id="syncStatus"></span><span id="testResult"></span></div>
 <div id="kanbanView"><div id="board" class="board"></div></div>
 <div id="tableView" class="hidden"><table><thead><tr><th>Title</th><th>Status</th><th>Agent</th><th>Owner</th><th>Priority</th><th>Claude Skill</th><th>Goal</th><th>Next</th><th>Blocker</th></tr></thead><tbody id="tableBody"></tbody></table></div>
@@ -50,6 +50,8 @@ alter table public.kanban_items add column if not exists command_log jsonb defau
 alter table public.kanban_items add column if not exists due_date date;
 alter table public.kanban_items add column if not exists sort_order numeric;
 */
+const BUILD_VERSION='0.00002';
+const VERSION_HISTORY=['0.00002 — Added dynamic agent boxes, structured prompts, and visible version history','0.00001 — Added timestamp version display'];
 const SUPABASE_URL='https://yavxkarxbdkdqmnqqmrg.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhdnhrYXJ4YmRrZHFtbnFxbXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MDUxMTksImV4cCI6MjA5MjM4MTExOX0.nMSVm5ddGaMIGQ8OfOeE-oy1RBaFO0FGxhNssgCaiVk';
 const hasBackend=!SUPABASE_URL.includes('PASTE_')&&!SUPABASE_ANON_KEY.includes('PASTE_');
@@ -79,7 +81,7 @@ function fromDbItem(i){return{id:i.id,title:i.title,status:i.status,person:i.per
 async function loadItems(){if(!hasBackend){items=JSON.parse(localStorage.getItem('items')||'null')||demoItems;localStorage.setItem('items',JSON.stringify(items));setSync('Local mode',false);render();return}const{data,error}=await db.from('kanban_items').select('*').order('sort_order',{ascending:true});if(error){setSync('Sync error: '+error.message,false);return}if(!data.length){await db.from('kanban_items').insert(demoItems.map(toDbItem));return loadItems()}items=data.map(fromDbItem);setSync('Live synced');render()}
 async function saveOne(item){if(!hasBackend){localStorage.setItem('items',JSON.stringify(items));render();return}const{error}=await db.from('kanban_items').upsert(toDbItem(item));if(error)setSync('Save error: '+error.message,false);else setSync('Saved')}
 function subscribeRealtime(){if(!hasBackend)return;db.channel('kanban-live').on('postgres_changes',{event:'*',schema:'public',table:'kanban_items'},()=>loadItems()).subscribe()}
-function setVersion(){const now=new Date();document.getElementById('version').textContent=`v${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`}
+function setVersion(){const now=new Date();const loaded=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;document.getElementById('version').textContent=`v${BUILD_VERSION} • loaded ${loaded}`;document.getElementById('versionHistory').textContent='Version history: '+VERSION_HISTORY.join(' | ');
 function getAgentItems(agentName){const agent=agents.find(a=>a.name===agentName);return agent?items.filter(agent.match):items}
 function renderAgents(){const bar=document.getElementById('agentBar');if(!bar)return;bar.innerHTML=agents.map(agent=>{const matches=getAgentItems(agent.name);const active=activeAgent===agent.name?'active':'';const current=matches.find(i=>!['Done','Backlog'].includes(i.status))||matches[0];return `<div class="agent ${active}"><div onclick="toggleAgentFilter('${agent.name}')"><b><span>${esc(agent.name)}</span><span>${matches.length}</span></b><div>${esc(agent.desc)}</div><div class="${current?'agent-current':'agent-empty'}">${current?esc(current.title):'Nothing assigned'}</div></div><button onclick="copyAgentPrompt('${agent.name}')">Copy Prompt</button></div>`}).join('')}
 function toggleAgentFilter(agentName){activeAgent=activeAgent===agentName?'':agentName;render()}
