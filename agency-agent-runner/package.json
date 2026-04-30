@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node runner.js",
-    "run-once": "node runner.js"
+    "run-once": "node runner.js",
+    "serve": "node server.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

@@ -18,6 +18,22 @@ Fill in `.env` with your Supabase service role key and Anthropic API key. Keep `
 npm run run-once
 ```
 
+## Run From The Dashboard
+
+Start the local runner server:
+
+```powershell
+npm run serve
+```
+
+Then open the dashboard's Scripts tab and use:
+
+```text
+http://127.0.0.1:8787
+```
+
+The Run now button calls `POST /run/senior-pm` and writes a readable status message back to the dashboard log.
+
 ## Schedule
 
 Use Windows Task Scheduler to run:

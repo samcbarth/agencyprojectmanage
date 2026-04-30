@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { createClient } from '@supabase/supabase-js';
+import { pathToFileURL } from 'node:url';
 
 const required = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'ANTHROPIC_API_KEY', 'ANTHROPIC_MODEL'];
 const missing = required.filter((key) => !process.env[key]);
@@ -125,9 +126,10 @@ async function runSeniorPm(card) {
   const { error } = await supabase.from('kanban_items').update(update).eq('id', card.id);
   if (error) throw error;
   console.log(`${card.title}: updated by Senior PM`);
+  return { id: card.id, title: card.title, progress: update.progress_count, status: update.status };
 }
 
-async function main() {
+export async function runSeniorPmPass() {
   const { data, error } = await supabase
     .from('kanban_items')
     .select('*')
@@ -135,13 +137,21 @@ async function main() {
     .order('sort_order', { ascending: true });
 
   if (error) throw error;
+  const results = [];
   for (const card of data || []) {
-    await runSeniorPm(card);
+    results.push(await runSeniorPm(card));
   }
-  console.log(`Processed ${(data || []).length} cards`);
+  return { processed: (data || []).length, results };
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+async function main() {
+  const result = await runSeniorPmPass();
+  console.log(`Processed ${result.processed} cards`);
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
