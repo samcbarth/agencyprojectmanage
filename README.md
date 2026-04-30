@@ -131,11 +131,39 @@ Then use this runner URL in the dashboard Scripts tab:
 http://127.0.0.1:8787
 ```
 
+## Available Scripts
+
+These scripts live in `agency-agent-runner/package.json` and are run from the `agency-agent-runner` folder unless noted otherwise.
+
+| Command | File It Runs | When To Use It | What It Does |
+| --- | --- | --- | --- |
+| `npm install` | Uses `package.json` | First-time setup or after dependency changes. | Installs the local runner dependencies: Anthropic SDK, Supabase client, and dotenv. Creates `node_modules/`, which is intentionally ignored by Git. |
+| `npm run run-once` | `runner.js` | Manual one-time Senior PM review pass. | Loads `.env`, connects to Supabase with the service role key, reads all non-Done cards, asks Claude for structured Senior PM updates, saves updates back to Supabase, increments progress counts, and adds action log entries. |
+| `npm start` | `runner.js` | Shortcut for a one-time run. | Same behavior as `npm run run-once`. This exists because `start` is a standard npm command. |
+| `npm run serve` | `server.js` | When you want the dashboard Scripts tab to run automation on demand. | Starts a local HTTP server, usually at `http://127.0.0.1:8787`, so the browser dashboard can call the runner without exposing private keys in GitHub Pages. |
+| `npm --prefix "C:\path\to\agency-agent-runner" run run-once` | `runner.js` | Windows Task Scheduler or scripts outside the runner folder. | Runs the Senior PM pass from any working directory by pointing npm directly at the runner folder. |
+
+Runner endpoints exposed by `npm run serve`:
+
+| Endpoint | Method | Used By | What It Returns |
+| --- | --- | --- | --- |
+| `/health` | `GET` | Manual checks or future status checks. | JSON showing whether the local runner server is ready. |
+| `/run/senior-pm` | `POST` | Dashboard Scripts tab Run now button. | Runs one Senior PM pass and returns JSON with processed card count, results, or an error message. |
+
+Important runner behavior:
+
+- `runner.js` requires `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, and `ANTHROPIC_MODEL`.
+- `STUCK_RUN_THRESHOLD` controls how many no-progress runs happen before a card is marked `Stuck` and its action is marked `Blocked`.
+- The runner only processes cards where `status` is not `Done`.
+- The runner updates these tracked fields: `priority`, `decision_needed`, `action_needed`, `action_status`, `ai_summary`, `ai_recommendation`, `ai_risk_assessment`, and `ai_questions`.
+- The runner also updates progress metadata: `last_updated_by_agent`, `last_progress_timestamp`, `progress_count`, `no_progress_run_count`, `action_log`, and `updated_at`.
+- `server.js` prevents two Senior PM runs from executing at the same time. If one is already running, `/run/senior-pm` returns a conflict message.
+
 ## Scripts Tab
 
 The Scripts tab lets the dashboard trigger local automation without putting private keys in the public site.
 
-Current script:
+Current dashboard script:
 
 - `Senior PM Runner`
 - Endpoint: `POST /run/senior-pm`
@@ -143,6 +171,15 @@ Current script:
 - Work performed: updates priority, decision-needed fields, action-needed fields, action status, AI summaries, progress counts, stuck signals, and action logs.
 
 The status log is saved in browser localStorage so you can quickly see whether a script ran, failed, or needs the local runner server started.
+
+Normal use:
+
+1. Start the local server with `npm run serve`.
+2. Open the dashboard.
+3. Go to the `Scripts` tab.
+4. Confirm the runner URL is `http://127.0.0.1:8787`.
+5. Press `Run now` on `Senior PM Runner`.
+6. Read the status log for a plain-English success or failure message.
 
 ## Suggested Scheduling
 
