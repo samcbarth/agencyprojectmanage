@@ -69,6 +69,12 @@ dialog{width:96vw!important}
 .agent{min-width:calc(50% - 4px)!important}
 .home-preview-grid{display:none!important}
 }
+.mobile-action-plan{display:none}
+@media(max-width:1024px), (hover:none) and (pointer:coarse){
+  .mobile-action-plan{display:grid!important}
+  .mobile-action-plan .card-row{font-size:11px;line-height:1.35;margin-top:6px}
+  .mobile-action-plan .card-row b{font-size:9px}
+}
 </style>
 </head>
 <body>
@@ -272,7 +278,7 @@ function render(){
       card.dataset.id=item.id;
       card.addEventListener('dragstart',handleDragStart);
       card.addEventListener('dragend',handleDragEnd);
-      card.innerHTML=`<div class="card-title">${esc(item.title)}</div>${field('Short Description',item.goal)}${field('Tools I Expect To Use',item.toolStack)}<div class="card-actions"><span class="pill" onclick="move('${item.id}',-1)">←</span><span class="pill" onclick="move('${item.id}',1)">→</span><select class="status-select" style="background:${getLane(item.status).color};color:white" onchange="changeStatus('${item.id}',this.value)">${lanes.map(s=>`<option value="${esc(s.name)}" ${s.name===item.status?'selected':''}>${esc(s.name)}</option>`).join('')}</select><span class="pill" onclick="openDetails('${item.id}')">Open</span><span class="pill" onclick="copyPrompt('${item.id}')">Copy Prompt</span><span class="pill" onclick="removeItem('${item.id}')">Delete</span></div>`;
+      card.innerHTML=`<div class="card-title">${esc(item.title)}</div>${field('Short Description',item.goal)}${field('Tools I Expect To Use',item.toolStack)}${field('Comprehensive Detailed Action Plan',item.nextAction,'mobile-action-plan')}<div class="card-actions"><span class="pill" onclick="move('${item.id}',-1)">←</span><span class="pill" onclick="move('${item.id}',1)">→</span><select class="status-select" style="background:${getLane(item.status).color};color:white" onchange="changeStatus('${item.id}',this.value)">${lanes.map(s=>`<option value="${esc(s.name)}" ${s.name===item.status?'selected':''}>${esc(s.name)}</option>`).join('')}</select><span class="pill" onclick="openDetails('${item.id}')">Open</span><span class="pill" onclick="copyPrompt('${item.id}')">Copy Prompt</span><span class="pill" onclick="removeItem('${item.id}')">Delete</span></div>`;
       body.appendChild(card);
     });
     board.appendChild(col);
