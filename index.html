@@ -69,9 +69,9 @@ dialog{width:96vw!important}
 .agent{min-width:calc(50% - 4px)!important}
 .home-preview-grid{display:none!important}
 }
-.mobile-action-plan{display:none}
+.mobile-action-plan{display:none}.mobile-action-plan pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;color:inherit}
 @media(max-width:1024px), (hover:none) and (pointer:coarse){
-  .mobile-action-plan{display:grid!important;white-space:pre-wrap;overflow-wrap:anywhere}
+  .mobile-action-plan{display:grid!important}
   .mobile-action-plan .card-row{font-size:11px;line-height:1.35;margin-top:6px}
   .mobile-action-plan .card-row b{font-size:9px}
 }
@@ -235,6 +235,7 @@ function copyAgentPrompt(agentName){const i=getAgentItems(agentName).find(x=>x.s
 function switchView(view){document.getElementById('kanbanView').classList.toggle('hidden',view!=='kanban');document.getElementById('tableView').classList.toggle('hidden',view!=='table');document.getElementById('activityView').classList.toggle('hidden',view!=='activity');document.getElementById('queueView').classList.toggle('hidden',view!=='queue');document.getElementById('statsView').classList.toggle('hidden',view!=='stats');document.getElementById('scriptsView').classList.toggle('hidden',view!=='scripts');document.getElementById('versionsView').classList.toggle('hidden',view!=='versions');document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));render()}function toggleFocus(){focus=!focus;document.getElementById('app').classList.toggle('focus-on',focus)}
 function filteredItems(){const s=document.getElementById('search').value.toLowerCase();const o=document.getElementById('ownerFilter').value;const agent=agents.find(a=>a.name===activeAgent);return items.filter(i=>JSON.stringify(i).toLowerCase().includes(s)&&(!o||i.person===o)&&(!agent||agent.match(i))).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0))}
 function field(label,value,cls=''){return `<div class="card-row ${cls}"><b>${label}</b>${value?esc(value):'<span class="empty-field">—</span>'}</div>`}
+function mobilePlanField(label,value){return `<div class="card-row mobile-action-plan"><b>${label}</b>${value?`<pre>${esc(value)}</pre>`:'<span class="empty-field">—</span>'}</div>`}
 function inputHtml(id,value,placeholder='',disabled=false){return `<input id="${id}" value="${esc(value)}" placeholder="${esc(placeholder)}"${disabled?' disabled':''}>`}
 function textareaHtml(id,value,placeholder='',disabled=false){return `<textarea id="${id}" placeholder="${esc(placeholder)}"${disabled?' readonly':''}>${esc(value)}</textarea>`}
 function selectHtml(id,options,value,keepFirst=false,disabled=false,multiple=false){if(multiple)return `<select id="${id}" multiple size="4"${disabled?' disabled':''}>${multiOptionList(options,value)}</select>`;return `<select id="${id}"${disabled?' disabled':''}>${optionList(options,value,keepFirst)}</select>`}
@@ -278,7 +279,7 @@ function render(){
       card.dataset.id=item.id;
       card.addEventListener('dragstart',handleDragStart);
       card.addEventListener('dragend',handleDragEnd);
-      card.innerHTML=`<div class="card-title">${esc(item.title)}</div>${field('Short Description',item.goal)}${field('Tools I Expect To Use',item.toolStack)}${field('Comprehensive Detailed Action Plan',item.nextAction,'mobile-action-plan')}<div class="card-actions"><span class="pill" onclick="move('${item.id}',-1)">←</span><span class="pill" onclick="move('${item.id}',1)">→</span><select class="status-select" style="background:${getLane(item.status).color};color:white" onchange="changeStatus('${item.id}',this.value)">${lanes.map(s=>`<option value="${esc(s.name)}" ${s.name===item.status?'selected':''}>${esc(s.name)}</option>`).join('')}</select><span class="pill" onclick="openDetails('${item.id}')">Open</span><span class="pill" onclick="copyPrompt('${item.id}')">Copy Prompt</span><span class="pill" onclick="removeItem('${item.id}')">Delete</span></div>`;
+      card.innerHTML=`<div class="card-title">${esc(item.title)}</div>${field('Short Description',item.goal)}${field('Tools I Expect To Use',item.toolStack)}${mobilePlanField('Comprehensive Detailed Action Plan',item.nextAction)}<div class="card-actions"><span class="pill" onclick="move('${item.id}',-1)">←</span><span class="pill" onclick="move('${item.id}',1)">→</span><select class="status-select" style="background:${getLane(item.status).color};color:white" onchange="changeStatus('${item.id}',this.value)">${lanes.map(s=>`<option value="${esc(s.name)}" ${s.name===item.status?'selected':''}>${esc(s.name)}</option>`).join('')}</select><span class="pill" onclick="openDetails('${item.id}')">Open</span><span class="pill" onclick="copyPrompt('${item.id}')">Copy Prompt</span><span class="pill" onclick="removeItem('${item.id}')">Delete</span></div>`;
       body.appendChild(card);
     });
     board.appendChild(col);
