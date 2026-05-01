@@ -2,12 +2,13 @@
 
 Mobile-first project management dashboard for the Agency Orchestra system. The live app is a static GitHub Pages dashboard backed by Supabase, with an optional local runner that can perform Senior Project Manager review passes using Claude.
 
-Current app version: `v0.00012`
+Current app version: `v0.00017`
 
 ## What This Tool Does
 
 - Shows project cards in a Kanban board with mobile full-screen swipe lanes.
 - Stores cards in Supabase when configured, with localStorage fallback for demo/offline use.
+- Imports project tasks from JSON files for bulk upload.
 - Tracks action requests, owners, progress counts, stuck signals, blocker notes, and AI summaries.
 - Gives each agent a top-card summary with status and progress bars.
 - Provides tabs for Kanban, Main Table, Activity, Action Queue, Stats, and Scripts.
