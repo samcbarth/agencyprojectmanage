@@ -2,7 +2,7 @@
 
 Mobile-first project management dashboard for the Agency Orchestra system. The live app is a static GitHub Pages dashboard backed by Supabase, with an optional local runner that can perform Senior Project Manager review passes using Claude.
 
-Current app version: `v0.00017`
+Current app version: `v0.00028`
 
 ## What This Tool Does
 
