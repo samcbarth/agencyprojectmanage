@@ -390,7 +390,7 @@ function openDetails(id){
     f('Comprehensive Detailed Action Plan',textareaHtml('dNext',i.nextAction,'Comprehensive detailed action plan')),
   ].join('');
   const aiSections=[
-    section('Classification','How AI categorizes and routes the card.',[
+    section('Classification · Tool Evaluator','How AI categorizes and routes the card. Owned by Tool Evaluator.',[
       f('AI Status',selectHtml('dStatus',lanes.map(l=>l.name),i.status,false,true)),
       f('AI System',selectHtml('dSystem',systems,i.system,true,true)),
       f('AI Blocker Type',selectHtml('dBlockerType',blockerTypes,i.blockerType,true,true)),
@@ -417,7 +417,7 @@ function openDetails(id){
       f('AI Prompt Status',selectHtml('dPromptStatus',promptStatuses,i.promptStatus,true,true)),
       f('AI Agent Confidence',selectHtml('dAgentConfidence',agentConfidenceLevels,i.agentConfidence,true,true)),
     ].join('')),
-    section('Planning','How AI shapes the work before execution.',[
+    section('Planning · Project Shepherd','How AI shapes the work before execution. Owned by Project Shepherd.',[
       f('AI Success Criteria',textareaHtml('dSuccess',i.successCriteria,'Success criteria',true)),
       f('AI Input Context',textareaHtml('dInputContext',i.inputContext,'Input context / source notes',true)),
       f('AI Desired Output',textareaHtml('dDesiredOutput',i.desiredOutput,'Desired output format',true)),
@@ -427,7 +427,7 @@ function openDetails(id){
       f('AI Resource Need',textareaHtml('dResources',i.resourceNeed,'AI resource need',true)),
       f('AI Decision Needed',textareaHtml('dDecision',i.decisionNeeded,'AI decision needed',true)),
     ].join('')),
-    section('Execution','The action request AI should produce and maintain.',[
+    section('Execution · Project Manager','The action request AI should produce and maintain. Owned by Project Manager.',[
       f('AI Action Type',selectHtml('dActionType',actionTypes,i.actionType,true,true)),
       f('AI Action Owner',selectHtml('dActionOwner',executionAgents,i.actionOwner,true,true)),
       f('AI Action Status',selectHtml('dActionStatus',actionStatuses,i.actionStatus,true,true)),
@@ -437,7 +437,7 @@ function openDetails(id){
       f('AI Action Output Expected',textareaHtml('dActionOutput',i.actionOutputExpected,'AI action output expected',true)),
       f('AI Action Result',textareaHtml('dActionResult',i.actionResult,'AI action result',true)),
     ].join('')),
-    section('Progress and Intelligence','How AI tracks progress and summarizes the card.',[
+    section('Progress and Intelligence · Senior Project Manager','How AI tracks progress and summarizes the card. Owned by Senior Project Manager.',[
       f('AI Last Updated By Agent',inputHtml('dLastAgent',i.lastUpdatedByAgent,'AI last updated by agent',true)),
       f('AI Progress Count',inputHtml('dProgressCount',i.progressCount||0,'AI progress count',true)),
       f('AI No-Progress Count',inputHtml('dNoProgressCount',i.noProgressRunCount||0,'AI no-progress run count',true)),
